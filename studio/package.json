@@ -1,0 +1,22 @@
+{
+  "name": "kk-verse-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "KK Verse Studio: an AI video editing studio that runs inside Claude Code. Captions, effects and sound design for short-form video.",
+  "license": "MIT",
+  "bin": { "kkv": "bin/kkv" },
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node test/smoke.js" },
+  "dependencies": {
+    "@fontsource/anton": "^5.0.0",
+    "@fontsource/archivo-black": "^5.0.0",
+    "@fontsource/baloo-2": "^5.0.0",
+    "@fontsource/dm-sans": "^5.0.0",
+    "@fontsource/dm-serif-display": "^5.0.0",
+    "@fontsource/inter": "^5.0.0",
+    "@fontsource/kalam": "^5.0.0",
+    "@fontsource/noto-sans-devanagari": "^5.0.0",
+    "@fontsource/space-mono": "^5.0.0",
+    "playwright-core": "^1.48.0"
+  }
+}
