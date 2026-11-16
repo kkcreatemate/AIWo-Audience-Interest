@@ -1,0 +1,319 @@
+<title>KK Verse Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Baloo+2:wght@500;700;800&family=DM+Sans:wght@400;500;700&family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;600;800;900&family=Kalam:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap">
+<style>
+/* Layout: a phone-shaped live preview pinned beside (desktop) or above (phone) the catalog you pick from. */
+:root {
+  --bg: #F7F4EF; --surface: #FFFFFF; --ink: #1C1814; --ink-mid: #6B6560; --line: #E2DDD6;
+  --accent: #5B4FE8; --accent-soft: rgba(91, 79, 232, .1); --on-accent: #FFFFFF; --device: #14121C; --ok: #1F8A5F;
+  --display: 'DM Serif Display', Georgia, serif;
+  --body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #15131B; --surface: #1F1C29; --ink: #F1EEF7; --ink-mid: #A9A3BA; --line: #353044; --accent: #A397FF; --accent-soft: rgba(163, 151, 255, .16); --on-accent: #15131B; --device: #000000; --ok: #5CD3A2; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #15131B; --surface: #1F1C29; --ink: #F1EEF7; --ink-mid: #A9A3BA; --line: #353044; --accent: #A397FF; --accent-soft: rgba(163, 151, 255, .16); --on-accent: #15131B; --device: #000000; --ok: #5CD3A2; color-scheme: dark; }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header.top { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(1.9rem, 5vw, 2.7rem); line-height: 1.1; margin: 0; text-wrap: balance; }
+h1 em { color: var(--accent); }
+.lede { color: var(--ink-mid); max-width: 60ch; margin: 0; }
+
+.tool { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 32px; align-items: start; }
+.stagecol { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); display: flex; flex-direction: column; gap: 12px; }
+.device { background: var(--device); border-radius: 30px; padding: 9px; box-shadow: 0 18px 50px rgba(20, 18, 28, .22); max-width: 100%; align-self: center; width: 100%; }
+#screen { position: relative; width: 100%; aspect-ratio: 9 / 16; border-radius: 22px; overflow: hidden; background: #6F6A8C; }
+#stage { position: absolute; left: 0; top: 0; }
+#stage * { box-sizing: border-box; }
+.side { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.now { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 8px 8px 8px 14px; min-width: 0; }
+.now code { font-family: var(--mono); font-size: .82rem; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.controls { display: flex; gap: 8px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+.btn { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 7px 12px; font-size: .82rem; font-weight: 500; white-space: nowrap; }
+.btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.grow { flex: 1; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.tabs { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 4px; margin-bottom: 12px; }
+.tab { flex: 1; border: 0; background: transparent; border-radius: 9px; padding: 9px 6px; font-size: .9rem; font-weight: 700; color: var(--ink-mid); }
+.tab span { font-weight: 400; font-variant-numeric: tabular-nums; margin-left: 4px; }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--on-accent); }
+.group { font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-mid); margin: 18px 0 6px; }
+.list { display: flex; flex-direction: column; gap: 6px; }
+.item { display: grid; grid-template-columns: 8.2rem minmax(0, 1fr); gap: 4px 14px; align-items: baseline; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; width: 100%; }
+.item b { font-family: var(--mono); font-size: .86rem; font-weight: 700; }
+.item small { font-size: .88rem; color: var(--ink-mid); line-height: 1.4; }
+.item[aria-current="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.item[aria-current="true"] b { color: var(--accent); }
+.hint { font-size: .85rem; color: var(--ink-mid); margin: 0 0 10px; }
+
+.how { margin-top: 44px; border-top: 1px solid var(--line); padding-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px 32px; }
+.how h2 { font-family: var(--display); font-weight: 400; font-size: 1.35rem; margin: 0 0 8px; }
+.how p { margin: 0 0 10px; color: var(--ink-mid); font-size: .95rem; }
+pre { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 0; overflow-x: auto; font-family: var(--mono); font-size: .78rem; line-height: 1.6; }
+.foot { margin-top: 32px; font-size: .82rem; color: var(--ink-mid); }
+
+@media (max-width: 760px) {
+  .wrap { padding-block: 18px 40px; }
+  .tool { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .stagecol { top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 8px 10px; margin-inline: -4px; padding-inline: 4px; flex-direction: row; align-items: stretch; }
+  .device { width: auto; height: 40vh; min-height: 240px; aspect-ratio: 9 / 16; border-radius: 22px; padding: 6px; align-self: flex-start; flex: none; }
+  #screen { height: 100%; width: auto; border-radius: 17px; }
+  .side { flex: 1; justify-content: flex-end; gap: 8px; }
+  .now { flex-direction: column; align-items: stretch; padding: 10px; }
+  .controls { flex-direction: column; }
+  .item { grid-template-columns: minmax(0, 1fr); }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">KK Create · video editing inside Claude</div>
+    <h1>KK Verse Studio: drop in a clip, <em>type one line</em></h1>
+    <p class="lede">Captions timed to your voice, effects that sit behind your head, and sound design. Pick anything below to watch it play. In Claude Code you would type the command shown under the preview.</p>
+  </header>
+
+  <div class="tool">
+    <div class="stagecol">
+      <div class="device"><div id="screen" role="img" aria-label="Live preview of the selected style on a sample speaker"><div id="stage"></div></div></div>
+      <div class="side">
+        <div class="now"><code id="cmd">/kk-captions kk-pop</code><button class="btn" id="copy" type="button">Copy</button></div>
+        <div class="controls">
+          <button class="btn grow" id="play" type="button" aria-pressed="false">Pause</button>
+          <button class="btn grow" id="sound" type="button" aria-pressed="false">Sound off</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="catalog">
+      <div class="tabs" role="tablist" aria-label="Catalog">
+        <button class="tab" role="tab" id="tab-captions" data-tab="captions" aria-selected="true" type="button">Captions<span id="n-captions"></span></button>
+        <button class="tab" role="tab" id="tab-effects" data-tab="effects" aria-selected="false" type="button">Effects<span id="n-effects"></span></button>
+        <button class="tab" role="tab" id="tab-sounds" data-tab="sounds" aria-selected="false" type="button">Sounds<span id="n-sounds"></span></button>
+      </div>
+      <p class="hint" id="hint"></p>
+      <div id="panel"></div>
+    </div>
+  </div>
+
+  <section class="how" aria-label="How to use it">
+    <div>
+      <h2>Use it in Claude Code</h2>
+      <p>Drag a video into the chat, then say what you want in plain words.</p>
+<pre>/kk-reel my-clip.mp4
+/kk-captions truck-art, a bit higher
+/kk-effects orbit from 3 to 6 seconds
+/kk-effects big-word MYTH when I say "that is a myth"
+/kk-sfx add a whoosh when I say "here's the thing"</pre>
+    </div>
+    <div>
+      <h2>Install once</h2>
+      <p>Everything runs on your own computer. Your video is never uploaded.</p>
+<pre>git clone https://github.com/kkcreatemate/AIWo-Audience-Interest ~/.kkverse
+bash ~/.kkverse/studio/install.sh</pre>
+    </div>
+  </section>
+  <p class="foot">The speaker in the preview is a drawing. On your clip the studio finds the real person, so words and lights go between you and your wall. Sounds here are the same ones the studio mixes under your voice.</p>
+</div>
+
+<script>/*__KKV_LIBS__*/</script>
+<script>
+(function () {
+  'use strict';
+  var KKV = window.KKV, Cam = window.KKVCamera, SFX = window.KKVSfx, Lines = window.KKVLines;
+  var $ = function (id) { return document.getElementById(id); };
+  var screenEl = $('screen'), panel = $('panel');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- sample speaker + room, drawn in the studio's 1080×1920 design space ---- */
+  var ROOM = '<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920" style="position:absolute;left:0;top:0;transform-origin:0 0">' +
+    '<defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8C87AD"/><stop offset="1" stop-color="#5E5980"/></linearGradient>' +
+    '<radialGradient id="lamp" cx="0.82" cy="0.2" r="0.5"><stop offset="0" stop-color="#FFE3A8" stop-opacity=".55"/><stop offset="1" stop-color="#FFE3A8" stop-opacity="0"/></radialGradient></defs>' +
+    '<rect width="1080" height="1920" fill="url(#wall)"/><rect width="1080" height="1920" fill="url(#lamp)"/>' +
+    '<rect x="70" y="250" width="250" height="330" rx="8" fill="#4B466B"/><rect x="92" y="272" width="206" height="286" fill="#F7F4EF"/><circle cx="195" cy="390" r="62" fill="#5B4FE8"/><rect x="130" y="480" width="130" height="14" fill="#1C1814"/>' +
+    '<rect x="760" y="640" width="320" height="16" fill="#3F3A5C"/><rect x="790" y="520" width="38" height="120" fill="#FFD400"/><rect x="832" y="490" width="34" height="150" fill="#F7F4EF"/><rect x="870" y="540" width="44" height="100" fill="#E5322D"/><rect x="918" y="505" width="30" height="135" fill="#22B573"/>' +
+    '<rect x="0" y="1500" width="1080" height="420" fill="#474263"/></svg>';
+  var SPEAKER = '<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920" style="position:absolute;left:0;top:0;transform-origin:0 0">' +
+    '<path d="M80 1920 C80 1380 250 1150 540 1150 C830 1150 1000 1380 1000 1920 Z" fill="#2D2850"/>' +
+    '<path d="M440 1150 C470 1230 610 1230 640 1150 L620 1010 L460 1010 Z" fill="#C98F68"/>' +
+    '<ellipse cx="540" cy="700" rx="186" ry="238" fill="#DBA57C"/>' +
+    '<path d="M346 690 C330 480 430 384 548 384 C690 384 760 500 738 700 C720 600 660 540 560 530 C460 540 380 580 346 690 Z" fill="#241A18"/>' +
+    '<ellipse cx="470" cy="700" rx="17" ry="20" fill="#241A18"/><ellipse cx="612" cy="700" rx="17" ry="20" fill="#241A18"/>' +
+    '<path d="M478 820 Q540 868 604 820" stroke="#8A4A3A" stroke-width="13" fill="none" stroke-linecap="round"/>' +
+    '<rect x="496" y="1320" width="88" height="88" rx="18" fill="#FFD400"/><text x="540" y="1384" text-anchor="middle" font-family="DM Serif Display, Georgia, serif" font-size="58" fill="#1C1814">kk</text></svg>';
+  var LOOKS = { moody: 'contrast(1.12) saturate(.8) brightness(.94)', warm: 'sepia(.28) saturate(1.15)', cool: 'hue-rotate(-12deg) saturate(.92)', punchy: 'contrast(1.12) saturate(1.35)', bw: 'grayscale(1) contrast(1.16)' };
+
+  /* ---- demo script → word timings (stand-in for what the studio hears in your clip) ---- */
+  function demoWords(text) {
+    var t = 0.35, out = [];
+    text.split(/\s+/).forEach(function (w) {
+      var d = 0.15 + 0.042 * Array.from(w).length;
+      out.push({ w: w, s: +t.toFixed(3), e: +(t + d).toFixed(3) });
+      t += d + (/[.!?]$/.test(w) ? 0.38 : 0.05);
+    });
+    return out;
+  }
+  var WORDS = demoWords('Stop paying an editor for every single reel. Claude edits it in one command. Ek command mein poora edit!');
+  var KEYS = ['editor', 'every', 'Claude', 'one', 'poora'];
+  var DEMO = {
+    headline: { text: 'Stop paying|for edits' }, 'lower-third': { name: 'Kavya', title: 'KK Create', y: 0.62 },
+    checklist: { title: 'In one command', items: 'Captions|Effects|Sound design' },
+    counter: { to: 4500000, prefix: '₹', label: 'saved last year' }, comment: {}, stamp: { text: 'MYTH', y: 0.52 },
+    callout: { text: 'this!', x: 0.74, y: 0.34, from: 'right' }, 'source-tag': { text: 'Source: add your citation here' },
+    'follow-cta': { y: 0.6 }, progress: {}, 'big-word': { text: 'MYTH' }, spotlight: {}, orbit: {}, 'wall-text': { text: 'EDIT FASTER' },
+    'punch-in': {}, 'slow-push': { zoom: 1.2 }, grade: { look: 'bw' },
+  };
+  var GROUPS = [['camera', 'Camera'], ['behind', 'Behind you'], ['front', 'Overlays'], ['grade', 'Colour']];
+
+  /* ---- player state ---- */
+  var cur = { kind: 'captions', name: 'kk-pop' }, tab = 'captions';
+  var loopDur = 6, t0 = performance.now(), paused = reduce, pausedAt = 1.3, lastLoop = -1, ready = false, token = 0, visible = true;
+  var cues = [], look = null, events = [], roomEl = null, spkEl = null, soundOn = false;
+
+  function build(kind, name) {
+    var comp = { W: screenEl.clientWidth, H: screenEl.clientHeight, fps: 30, duration: 8, captions: null, effects: [], camera: [], track: null };
+    cues = []; look = null; events = [];
+    if (kind === 'captions') {
+      var d = KKV.captions[name].defaults || {};
+      comp.captions = { style: name, lines: Lines.buildLines(WORDS, { maxChars: d.maxChars, maxWords: d.maxWords, keys: KEYS }) };
+      loopDur = WORDS[WORDS.length - 1].e + 0.9;
+    } else {
+      var def = KKV.effects[name], at = 0.5, dur = def.dur || 5;
+      var fx = Object.assign({ type: name, at: def.dur === 0 ? 0 : at, dur: def.dur === 0 ? dur + 1 : dur }, DEMO[name] || {});
+      var p = Object.assign(KKV.coerce(def.params || {}, fx), { at: fx.at, dur: fx.dur });
+      if (def.kind === 'camera') cues = [name === 'slow-push' ? { at: fx.at, dur: fx.dur, zoom: p.zoom, cx: 0.5, cy: 0.36, rise: fx.dur, fall: 0, linear: true } : { at: fx.at, dur: fx.dur, zoom: p.zoom, cx: 0.5, cy: 0.36, rise: p.rise, fall: p.fall }];
+      else if (def.kind === 'grade') look = { at: fx.at, dur: fx.dur, css: LOOKS[p.look] || LOOKS.moody };
+      else comp.effects = [fx];
+      comp.camera = cues;
+      // a quiet caption underneath so the effect is seen in context
+      comp.captions = { style: 'clean', y: 0.8, lines: Lines.buildLines(demoWords('This is how it looks.'), { maxChars: 30, maxWords: 7, keys: [] }) };
+      if (def.sfx) events = def.sfx(p).map(function (s) { return { name: s.name, t: fx.at + s.t, gain: s.gain, dur: s.dur }; });
+      loopDur = fx.at + fx.dur + 0.9;
+    }
+    comp.duration = loopDur;
+    return comp;
+  }
+
+  function select(kind, name) {
+    cur = { kind: kind, name: name };
+    var my = ++token;
+    ready = false;
+    $('cmd').textContent = (kind === 'captions' ? '/kk-captions ' : '/kk-effects ') + name;
+    Array.prototype.forEach.call(panel.querySelectorAll('.item'), function (b) { b.setAttribute('aria-current', String(b.dataset.kind === kind && b.dataset.name === name)); });
+    if (!screenEl.clientWidth) return;
+    KKV.init(build(kind, name)).then(function () {
+      if (my !== token) return;
+      var stage = $('stage'), back = $('back'), front = $('front');
+      var wrap = function (html) { var d = document.createElement('div'); d.style.cssText = 'position:absolute;inset:0;overflow:hidden'; d.innerHTML = html; return d; };
+      roomEl = wrap(ROOM); spkEl = wrap(SPEAKER);
+      stage.insertBefore(roomEl, back); stage.insertBefore(spkEl, front);
+      KKV.show('both');
+      ready = true; t0 = performance.now(); lastLoop = -1;
+      if (paused) draw(pausedAt);
+    });
+  }
+
+  function draw(t) {
+    KKV.seek(t);
+    var cam = Cam.at(cues, t), W = 1080, H = 1920;
+    var tr = 'translate(' + (-cam.x0 * W * cam.z).toFixed(2) + 'px,' + (-cam.y0 * H * cam.z).toFixed(2) + 'px) scale(' + cam.z.toFixed(4) + ')';
+    var f = look && t >= look.at && t < look.at + look.dur ? look.css : 'none';
+    [roomEl, spkEl].forEach(function (el) { if (el) { el.firstChild.style.transform = tr; el.style.filter = f; } });
+  }
+  function tick(now) {
+    if (ready && !paused && visible) {
+      var el = (now - t0) / 1000, n = Math.floor(el / loopDur);
+      if (n !== lastLoop) { lastLoop = n; if (soundOn) events.forEach(function (e) { play(e.name, e.t, e.gain, e.dur); }); }
+      draw(el % loopDur);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* ---- sound: the studio's own synth, played through Web Audio ---- */
+  var actx = null, bufs = {};
+  function play(name, when, gainDb, dur) {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+      var key = name + ':' + (dur || '');
+      if (!bufs[key]) { var f = SFX.make(name, { dur: dur }); var b = actx.createBuffer(1, f.length, SFX.SR); b.getChannelData(0).set(f); bufs[key] = b; }
+      var src = actx.createBufferSource(), g = actx.createGain();
+      src.buffer = bufs[key]; g.gain.value = Math.pow(10, (gainDb == null ? -6 : gainDb) / 20);
+      src.connect(g); g.connect(actx.destination); src.start(actx.currentTime + Math.max(0, when || 0));
+    } catch (e) { /* audio not available in this viewer */ }
+  }
+
+  /* ---- catalog ---- */
+  function item(kind, name, desc) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'item'; b.dataset.kind = kind; b.dataset.name = name;
+    b.setAttribute('aria-current', String(cur.kind === kind && cur.name === name));
+    var n = document.createElement('b'); n.textContent = name;
+    var d = document.createElement('small'); d.textContent = desc;
+    b.appendChild(n); b.appendChild(d);
+    b.addEventListener('click', function () {
+      if (kind === 'sounds') { play(name, 0, -4, name === 'typing' ? 0.9 : name === 'riser' ? 1.2 : undefined); $('cmd').textContent = '/kk-sfx add a ' + name + ' when I say "…"'; return; }
+      if (paused) { paused = false; setPlay(); }
+      select(kind, name);
+    });
+    return b;
+  }
+  function renderPanel() {
+    panel.textContent = '';
+    var hint = { captions: 'Timed to every word. English, Hindi or Hinglish. You choose which words get the highlight.', effects: 'Placed on the exact word: “when I say…”. Each one brings a matched sound; turn Sound on to hear it.', sounds: 'Tap to listen. Every sound is generated by the studio, so there is nothing to license.' };
+    $('hint').textContent = hint[tab];
+    var list = function () { var l = document.createElement('div'); l.className = 'list'; panel.appendChild(l); return l; };
+    if (tab === 'captions') { var l = list(); Object.keys(KKV.captions).forEach(function (k) { l.appendChild(item('captions', k, KKV.captions[k].desc)); }); }
+    else if (tab === 'effects') GROUPS.forEach(function (g) {
+      var hd = document.createElement('div'); hd.className = 'group'; hd.textContent = g[1]; panel.appendChild(hd);
+      var l2 = list(); Object.keys(KKV.effects).forEach(function (k) { if (KKV.effects[k].kind === g[0]) l2.appendChild(item('effects', k, KKV.effects[k].desc)); });
+    });
+    else { var l3 = list(); Object.keys(SFX.SOUNDS).forEach(function (k) { l3.appendChild(item('sounds', k, SFX.SOUNDS[k].desc)); }); }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (b) {
+    b.addEventListener('click', function () {
+      tab = b.dataset.tab;
+      Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (x) { x.setAttribute('aria-selected', String(x === b)); });
+      renderPanel();
+    });
+  });
+  $('n-captions').textContent = Object.keys(KKV.captions).length;
+  $('n-effects').textContent = Object.keys(KKV.effects).length;
+  $('n-sounds').textContent = Object.keys(SFX.SOUNDS).length;
+
+  function setPlay() { $('play').textContent = paused ? 'Play' : 'Pause'; $('play').setAttribute('aria-pressed', String(paused)); }
+  $('play').addEventListener('click', function () {
+    if (paused) { paused = false; t0 = performance.now() - pausedAt * 1000; lastLoop = 0; }
+    else { paused = true; pausedAt = ((performance.now() - t0) / 1000) % loopDur; }
+    setPlay();
+  });
+  $('sound').addEventListener('click', function () {
+    soundOn = !soundOn;
+    $('sound').textContent = soundOn ? 'Sound on' : 'Sound off'; $('sound').setAttribute('aria-pressed', String(soundOn));
+    if (soundOn) play('pop', 0, -10);
+  });
+  $('copy').addEventListener('click', function () {
+    var text = $('cmd').textContent, btn = $('copy');
+    var done = function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy'; }, 1400); };
+    var fallback = function () { var r = document.createRange(); r.selectNodeContents($('cmd')); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); };
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+  });
+
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }).observe(screenEl);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && !paused) { t0 = performance.now(); lastLoop = -1; } });
+  var rz = null, lastW = 0;
+  var onSize = function () { var w = screenEl.clientWidth; if (w && Math.abs(w - lastW) > 1) { lastW = w; select(cur.kind, cur.name); } };
+  if ('ResizeObserver' in window) new ResizeObserver(function () { clearTimeout(rz); rz = setTimeout(onSize, 120); }).observe(screenEl);
+  else window.addEventListener('resize', onSize);
+
+  setPlay(); renderPanel(); lastW = screenEl.clientWidth; select('captions', 'kk-pop');
+  requestAnimationFrame(tick);
+})();
+</script>

@@ -19,7 +19,7 @@ function parse(argv) {
       const eq = a.indexOf('=');
       if (eq > 0) { flags[a.slice(2, eq)] = a.slice(eq + 1); continue; }
       const k = a.slice(2), nx = argv[i + 1];
-      if (nx === undefined || (nx.startsWith('--') && nx.length > 2)) flags[k] = true;
+      if (nx === undefined || (nx.startsWith('--') && nx.length > 2) || nx === '-o') flags[k] = true;
       else { flags[k] = nx; i++; }
       continue;
     }
@@ -365,7 +365,7 @@ async function main(argv) {
   if (!cmd || cmd === 'help' || flags.help) return log(HELP);
   if (cmd === 'list') return cmdList(pos[1]);
   if (cmd === 'doctor') return cmdDoctor();
-  if (cmd === 'gallery') return require('./gallery').build(flags.out && flags.out !== true ? String(flags.out) : null, log);
+  if (cmd === 'gallery') return require('./gallery').build(flags.out && flags.out !== true ? String(flags.out) : null, log, !!flags.fragment);
   if (cmd === 'sound') { // audition a sound: kkv sound ding -o ding.wav
     const b = sfx.make(pos[1], { dur: flags.dur ? num(flags.dur, 'dur') : undefined });
     if (!b) U.fail(`No sound called "${pos[1] || ''}". Available: ${Object.keys(sfx.SOUNDS).join(', ')}`);
