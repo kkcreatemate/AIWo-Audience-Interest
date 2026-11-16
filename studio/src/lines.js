@@ -38,39 +38,52 @@ function keyScore(w) {
  */
 function buildLines(words, o) {
   const maxChars = o.maxChars || 18, maxWords = o.maxWords || 3, gap = o.gap == null ? 0.55 : o.gap;
-  const lines = [];
-  let cur = [], chars = 0;
-  const flush = () => { if (cur.length) lines.push({ words: cur }); cur = []; chars = 0; };
+  const len = (t) => Array.from(t).length;
+  const items = [];
   words.forEach((raw, i) => {
     const text = display(raw.w, o.keepPunct);
     if (!text) return;
-    const len = Array.from(text).length;
     const prev = i > 0 ? words[i - 1] : null;
-    if (cur.length) {
-      const tooLong = chars + 1 + len > maxChars || cur.length >= maxWords;
-      const paused = prev && raw.s - prev.e > gap;
-      const sentence = prev && endsSentence(prev.w);
-      const clause = prev && endsClause(prev.w) && chars >= maxChars * 0.55;
-      if (tooLong || paused || sentence || clause) flush();
+    items.push({
+      w: text, s: raw.s, e: Math.max(raw.e, raw.s + 0.04),
+      paused: !!prev && raw.s - prev.e > gap, afterSentence: !!prev && endsSentence(prev.w), afterClause: !!prev && endsClause(prev.w),
+    });
+  });
+
+  // explicit key words / phrases; a phrase is kept on one line where it fits
+  const keys = (o.keys || []).map((k) => String(k).trim()).filter(Boolean).map((k) => k.split(/\s+/).map(norm).filter(Boolean)).filter((k) => k.length);
+  let phraseId = 0;
+  for (let i = 0; i < items.length; i++) for (const k of keys) {
+    if (items[i].key || !k.every((kw, j) => items[i + j] && !items[i + j].key && norm(items[i + j].w) === kw)) continue;
+    phraseId++;
+    for (let j = 0; j < k.length; j++) { items[i + j].key = true; items[i + j].phrase = phraseId; items[i + j].phraseStart = j === 0; }
+  }
+
+  const lines = [];
+  let cur = [], chars = 0;
+  const flush = () => { if (cur.length) lines.push({ words: cur }); cur = []; chars = 0; };
+  items.forEach((it, i) => {
+    const inside = it.phrase && !it.phraseStart; // continuing a key phrase: never break here
+    if (cur.length && !inside) {
+      let need = len(it.w), count = 1;
+      if (it.phraseStart) for (let j = i + 1; items[j] && items[j].phrase === it.phrase; j++) { need += 1 + len(items[j].w); count++; }
+      const fitsAlone = need <= maxChars * 1.25 && count <= maxWords + 1;
+      const tooLong = chars + 1 + len(it.w) > maxChars || cur.length >= maxWords;
+      const phraseOverflow = count > 1 && fitsAlone && (chars + 1 + need > maxChars * 1.1 || cur.length + count > maxWords + 1);
+      if (tooLong || phraseOverflow || it.paused || it.afterSentence || (it.afterClause && chars >= maxChars * 0.55)) flush();
     }
-    cur.push({ w: text, s: raw.s, e: Math.max(raw.e, raw.s + 0.04) });
-    chars += (cur.length > 1 ? 1 : 0) + len;
+    const w = { w: it.w, s: it.s, e: it.e };
+    if (it.key) w.key = true;
+    cur.push(w);
+    chars += (cur.length > 1 ? 1 : 0) + len(it.w);
   });
   flush();
 
-  // key words: explicit list first, then (optionally) one automatic pick per line
-  const keys = (o.keys || []).map((k) => String(k).trim()).filter(Boolean).map((k) => k.split(/\s+/).map(norm).filter(Boolean)).filter((k) => k.length);
-  const flat = lines.flatMap((ln) => ln.words);
-  if (keys.length) {
-    for (let i = 0; i < flat.length; i++) for (const k of keys) {
-      if (k.every((kw, j) => flat[i + j] && norm(flat[i + j].w) === kw)) for (let j = 0; j < k.length; j++) flat[i + j].key = true;
-    }
-  }
   if (o.autoKey) {
     for (const ln of lines) {
       if (ln.words.some((w) => w.key)) continue;
       let best = null, bs = 0.5;
-      ln.words.forEach((w, i) => { const s = keyScore(w.w) + i * 0.05; if (s > bs) { bs = s; best = w; } });
+      ln.words.forEach((w, i) => { const sc = keyScore(w.w) + i * 0.05; if (sc > bs) { bs = sc; best = w; } });
       if (best) best.key = true;
     }
   }

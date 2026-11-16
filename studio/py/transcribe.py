@@ -37,8 +37,21 @@ def main():
             "It is downloaded from huggingface.co the first time. Check the connection (or that the host is allowed) and try again."
         )
 
+    # Read the 16 kHz mono WAV ourselves (the studio writes it with ffmpeg) rather than going
+    # through the library's own decoder, which breaks across PyAV versions.
+    import wave
+
+    import numpy as np
+
+    with wave.open(a.audio, "rb") as wf:
+        if wf.getframerate() != 16000 or wf.getnchannels() != 1 or wf.getsampwidth() != 2:
+            sys.exit("Expected 16 kHz mono 16-bit audio.")
+        audio = np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16).astype(np.float32) / 32768.0
+    if audio.size < 1600:
+        sys.exit("The audio track is empty.")
+
     segments, info = model.transcribe(
-        a.audio,
+        audio,
         language=None if a.lang in ("auto", "") else a.lang,
         word_timestamps=True,
         vad_filter=True,

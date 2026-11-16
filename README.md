@@ -49,6 +49,8 @@ Restart Claude Code, drag a video into the chat, type `/kk-reel`.
 
 **Or just open this repository in Claude Code** (desktop, terminal or web). The four skills are picked up automatically; the first command runs the one-time setup.
 
+**In Claude Code on the web / mobile:** start the session on the `aiwo-audience-interest` cloud environment. It allows the two hosts the speech model downloads from (`huggingface.co`, `us.aws.cdn.hf.co`) and runs the setup for you. On an environment without those hosts, effects still work but captions cannot be timed to the voice.
+
 Requirements: macOS, Linux or Windows (Git Bash / WSL) · Node 18+ · Python 3.9+ · Google Chrome or the bundled Chromium.
 
 ## How it works
@@ -94,6 +96,7 @@ studio/src/          engine: transcript, edit file, layer renderer, compositor, 
 studio/web/          caption styles and effects (HTML/JS, pure functions of time)
 studio/py/           speech-to-words and person tracking
 studio/setup.sh      one-time setup          studio/install.sh   install for every folder
+studio/test/         smoke test (npm test, from studio/)
 index.html           the AI workshop pre-session form (separate from the studio)
 ```
 

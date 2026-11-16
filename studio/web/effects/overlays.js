@@ -193,6 +193,8 @@
       const st = h('div', { position: 'absolute', left: '0', top: '0', border: `14px solid ${p.color}`, borderRadius: '22px', padding: '0 44px 4px', outline: `5px solid ${p.color}`, outlineOffset: '8px', fontFamily: fonts.black, fontSize: p.size + 'px', lineHeight: '1.15', letterSpacing: '0.04em', color: p.color, textTransform: 'uppercase', whiteSpace: 'nowrap', background: 'rgba(255,255,255,.08)', textShadow: '0 0 1px rgba(0,0,0,.25)' }, p.text);
       pos.appendChild(st); L.front.appendChild(pos);
       const wpx = st.offsetWidth; if (wpx > ctx.W * 0.86) { st.style.fontSize = (p.size * ctx.W * 0.86) / wpx + 'px'; }
+      const hgt = st.offsetHeight * 1.5; // room for the tilt
+      pos.style.top = ctx.clearOfFace(p, p.y * ctx.H - hgt / 2, hgt) + hgt / 2 + 'px';
       return { st };
     },
     frame({ st }, lt, p) {
@@ -299,6 +301,8 @@
       btn.appendChild(ring);
       card.appendChild(btn);
       L.front.appendChild(card);
+      const hgt = card.offsetHeight;
+      card.style.top = ctx.clearOfFace(p, p.y * ctx.H - hgt / 2, hgt) + hgt / 2 + 'px';
       return { card, btn, ring, label: btn.firstChild, on: null };
     },
     frame(S, lt, p) {
