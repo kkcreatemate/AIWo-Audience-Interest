@@ -8,7 +8,11 @@ Runs fully on this machine with faster-whisper; the model is downloaded once on 
 """
 import argparse
 import json
+import os
 import sys
+
+# Plain HTTPS downloads for the speech model: fewer hosts to reach, friendlier to locked-down networks.
+os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
 
 
 def main():

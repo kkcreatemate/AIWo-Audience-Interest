@@ -39,7 +39,7 @@ fi
 
 if [ -z "${KKV_SKIP_MODELS:-}" ]; then
   say "Models (one-time download; skipped quietly if offline)"
-  "$VPY" - <<'PY' || echo "  (models will download on first use instead)"
+  HF_HUB_DISABLE_XET=1 "$VPY" - <<'PY' || echo "  (models will download on first use instead)"
 import os, sys
 sys.path.insert(0, "py")
 import track
